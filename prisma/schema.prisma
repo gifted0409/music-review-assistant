@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Review {
+  id         Int       @id @default(autoincrement())
+  content    String
+  charCount  Int
+  artistName String?
+  albumName  String?
+  genre      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  feedback   Feedback?
+  research   Research?
+}
+
+model Feedback {
+  id                    Int      @id @default(autoincrement())
+  reviewId              Int      @unique
+  specificityScore      Int
+  musicalElementScore   Int
+  clicheScore           Int
+  structureScore        Int
+  personalStoryScore    Int
+  overallScore          Float
+  specificityComment    String
+  musicalElementComment String
+  clicheComment         String
+  structureComment      String
+  personalStoryComment  String
+  overallComment        String
+  detectedCliches       String   @default("[]")
+  suggestions           String   @default("[]")
+  createdAt             DateTime @default(now())
+  review                Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model Research {
+  id           Int      @id @default(autoincrement())
+  reviewId     Int?     @unique
+  artistName   String
+  albumName    String
+  genre        String?
+  artistBio    String?
+  albumSummary String?
+  userOpinions String?
+  keyThemes    String?
+  sources      String   @default("[]")
+  confidence   String   @default("low")
+  createdAt    DateTime @default(now())
+  review       Review?  @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+}
+
+model Cliche {
+  id          Int      @id @default(autoincrement())
+  expression  String   @unique
+  category    String?
+  alternative String?
+  usageCount  Int      @default(0)
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
